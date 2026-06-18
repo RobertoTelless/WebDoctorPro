@@ -5985,6 +5985,17 @@ namespace ERP_Condominios_Solution.Controllers
 
                 ViewBag.NomePlano = nomePlano;
 
+                Int32 idNovo = idPlano == 1 ? 18 : (idPlano == 2 ? 20 : 24);
+                Decimal valor = 0;
+                if (periodo == "Mensal")
+                {
+                    valor = idPlano == 1 ? 150 : (idPlano == 2 ? 200 : 300);
+                }
+                else
+                {
+                    valor = idPlano == 1 ? 1500 : (idPlano == 2 ? 2000 : 3000);
+                }
+
                 // Monta objeto
                 List<SelectListItem> tipo = new List<SelectListItem>();
                 tipo.Add(new SelectListItem() { Text = "Pessoa Física", Value = "1" });
@@ -6016,6 +6027,7 @@ namespace ERP_Condominios_Solution.Controllers
                 fale.Especialidade = periodo;
                 fale.Comeco = DateTime.Today.Date.ToLongDateString();
                 fale.Fim = DateTime.Today.Date.AddYears(1).ToLongDateString();
+                fale.Preco = valor;
                 return View(fale);
             }
             catch (Exception ex)
@@ -6153,11 +6165,11 @@ namespace ERP_Condominios_Solution.Controllers
                     // Valor do Plano
                     if (vm.Especialidade == "Mensal")
                     {
-                        vm.Preco = vm.Tipo == 1 ? 200 : (vm.Tipo == 2 ? 300 : 400);
+                        vm.Preco = vm.Tipo == 1 ? 150 : (vm.Tipo == 2 ? 200 : 300);
                     }
                     else
                     {
-                        vm.Preco = vm.Tipo == 1 ? 2000 : (vm.Tipo == 2 ? 3000 : 4000);
+                        vm.Preco = vm.Tipo == 1 ? 1500 : (vm.Tipo == 2 ? 2000 : 3000);
                     }
 
                     // Critica de login e Senha
@@ -7643,15 +7655,6 @@ namespace ERP_Condominios_Solution.Controllers
             try
             {
                 FaleConoscoViewModel vm = (FaleConoscoViewModel)Session["DTOPagamento"];
-
-
-
-
-
-
-
-
-
                 return View(vm);
             }
             catch (Exception ex)
@@ -7660,244 +7663,6 @@ namespace ERP_Condominios_Solution.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<ActionResult> ProcessarPagamento(FaleConoscoViewModel vm)
-        {
-            List<SelectListItem> tipo = new List<SelectListItem>();
-            tipo.Add(new SelectListItem() { Text = "Pessoa Física", Value = "1" });
-            tipo.Add(new SelectListItem() { Text = "Pessoa Jurídica", Value = "2" });
-            ViewBag.Tipo = new SelectList(tipo, "Value", "Text");
-            ViewBag.UF = new SelectList(empApp.GetAllUF(), "UF_CD_ID", "UF_SG_SIGLA");
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // Criticas
-                    if (vm.Tipo == null || vm.Tipo == 0)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0611", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Nome == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0592", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Resposta == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0591", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Celular == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0613", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Tipo == 1)
-                    {
-                        if (vm.CPF == null)
-                        {
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0608", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                    }
-                    if (vm.Tipo == 2)
-                    {
-                        if (vm.CNPJ == null)
-                        {
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0609", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                        if (vm.Razao == null)
-                        {
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0612", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                    }
-                    if (vm.CEP == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0614", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Endereco == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0615", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Numero == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0616", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Bairro == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0617", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.Cidade == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0618", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.UF == 0)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0619", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (!ValidarItensDiversos.IsValidEmail(vm.Resposta))
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0001", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-
-                    // Verifica assinante
-                    List<ASSINANTE> assList = assiApp.GetAllItens().Where(p => p.ASSI_IN_ATIVO == 1 & p.ASSI_IN_SISTEMA == 6).ToList();
-                    ASSINANTE assBase = null;
-                    ASSINANTE assBase1 = null;
-                    Int32 novoPlano = 0;
-                    if (vm.Tipo == 1)
-                    {
-                        assBase = assList.Where(p => p.ASSI_NR_CPF == vm.CPF).FirstOrDefault();
-                        if (assBase != null)
-                        {
-                            assBase1 = assList.Where(p => p.ASSI_NR_CPF == vm.CPF & p.ASSINANTE_PLANO_ASSINATURA.FirstOrDefault().PLAS_CD_ID == vm.Plano).FirstOrDefault();
-                            if (assBase1 == null)
-                            {
-                                novoPlano = 1;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        assBase = assList.Where(p => p.ASSI_NR_CNPJ == vm.CNPJ).FirstOrDefault();
-                        if (assBase != null)
-                        {
-                            assBase1 = assList.Where(p => p.ASSI_NR_CNPJ == vm.CNPJ & p.ASSINANTE_PLANO_ASSINATURA.FirstOrDefault().PLAS_CD_ID == vm.Plano).FirstOrDefault();
-                            if (assBase1 == null)
-                            {
-                                novoPlano = 1;
-                            }
-                        }
-                    }
-                    if (assBase != null & novoPlano == 0)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0628", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-
-                    // Critica de login e Senha
-                    if (vm.LoginBase == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0620", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.SenhaBase == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0629", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.SenhaBaseConfirma == null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0630", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.SenhaBaseConfirma != vm.SenhaBase)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0631", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.SenhaBase.Length < 3)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0223", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (!vm.SenhaBase.Any(char.IsUpper) || !vm.SenhaBase.Any(char.IsLower) && !vm.SenhaBase.Any(char.IsDigit))
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0224", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (!vm.SenhaBase.Any(p => !char.IsLetterOrDigit(p)))
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0225", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-                    if (vm.SenhaBase.Contains(vm.LoginBase) || vm.SenhaBase.Contains(vm.Nome) || vm.SenhaBase.Contains(vm.Resposta))
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0226", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-
-                    // verifica existencia login
-                    if (usuApp.GetByLogin(vm.LoginBase, 1) != null)
-                    {
-                        ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0633", CultureInfo.CurrentCulture));
-                        return View(vm);
-                    }
-
-                    // Cria/Altera assinante
-                    if (novoPlano == 0)
-                    {
-                        // Cria assinante
-                        vm.TipoAssinatura = 1;
-                        Int32 voltaCria = await CriarAssinanteNormal(vm);
-                        vm.LoginFinal = (String)Session["LoginDemo"];
-                        vm.Senha = (String)Session["SenhaDemo"];
-                        if (voltaCria == 0)
-                        {
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0622", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                    }
-                    else
-                    {
-                        // Altera assinante
-                        Int32 voltaAtl= AlterarAssinante(vm);
-                        if (voltaAtl == 1)
-                        {
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0634", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                        if (voltaAtl == 2)
-                        {
-                            ModelState.AddModelError("", CRMSys_Base.ResourceManager.GetString("M0635", CultureInfo.CurrentCulture));
-                            return View(vm);
-                        }
-                    }
-
-                    // Prepara mensagem
-                    MensagemViewModel mens = new MensagemViewModel();
-                    mens.NOME = vm.Nome;
-                    mens.ID = null;
-                    mens.MODELO = vm.Resposta;
-                    mens.MENS_DT_CRIACAO = DateTime.Today.Date;
-                    mens.MENS_IN_TIPO = 1;
-                    mens.MENS_TX_TEXTO = String.Empty;
-                    mens.MENS_NM_LINK = null;
-                    mens.MENS_NM_NOME = vm.Nome;
-                    mens.MENS_NM_CAMPANHA = "Contratação/Alteração de Assinatura";
-                    mens.MENS_NM_RODAPE = vm.Resposta;
-                    mens.MENS_NM_LINK = "https://eprontuario.azurewebsites.net/";
-                    mens.CELULAR = vm.Telefone;
-                    mens.MENS_NM_CABECALHO = vm.CPF;
-                    mens.MENS_NM_ASSINATURA = vm.CNPJ;
-                    mens.CIDADE = vm.Celular;
-                    mens.MENS_IN_CRM = novoPlano;
-                    await ProcessaEnvioEMailCompra(mens, vm);
-
-                    // Sucesso
-                    Session["MensFC"] = 333;
-                    return RedirectToAction("CarregarLandingPage");
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
-            else
-            {
-                return View(vm);
-            }
-        }
 
         [HttpPost]
         public async Task<JsonResult> EnviarEmailContato(string nome, string email, string celular, string motivo, string respostaPor, string mensagem)

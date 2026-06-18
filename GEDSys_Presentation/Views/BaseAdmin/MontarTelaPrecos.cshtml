@@ -24,6 +24,8 @@
             --azul-brand: #0b3961;
             --azul-destaque: #0056b3;
             --azul-gradient: linear-gradient(135deg, #0f4c81 0%, #0056b3 100%);
+            --verde-demo: #1ab394;
+            --verde-demo-hover: #18a689;
             --branco: #ffffff;
             --borda: #d1d9e0;
             --tag-popular: #e21c5a;
@@ -56,7 +58,18 @@
             position: relative;
         }
 
-        /* --- BOTÃO DE VOLTAR (NOVO) --- */
+        /* --- BARRA DE AÇÕES DO TOPO --- */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        /* --- BOTÃO DE VOLTAR --- */
         .btn-back {
             display: inline-flex;
             align-items: center;
@@ -70,7 +83,6 @@
             border: 1px solid transparent;
             transition: var(--transicao);
             background-color: transparent;
-            margin-bottom: 20px;
         }
 
         .btn-back i {
@@ -86,6 +98,33 @@
 
         .btn-back:hover i {
             transform: translateX(-4px);
+        }
+
+        /* --- BOTÃO SOLICITAR DEMONSTRAÇÃO (NOVO) --- */
+        .btn-demo-top {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--branco);
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 30px;
+            background-color: var(--verde-demo);
+            box-shadow: 0 4px 12px rgba(26, 179, 148, 0.2);
+            transition: var(--transicao);
+            border: none;
+        }
+
+        .btn-demo-top:hover {
+            background-color: var(--verde-demo-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(26, 179, 148, 0.3);
+        }
+
+        .btn-demo-top i {
+            font-size: 1.1rem;
         }
 
         /* --- HEADER & CHAVEAMENTO (TOGGLE) --- */
@@ -326,12 +365,9 @@
             .pricing-header h1 {
                 font-size: 2.5rem;
             }
-            /* Em telas maiores, fixa o botão de voltar no canto superior esquerdo */
-            .btn-back {
-                position: absolute;
-                top: 0;
-                left: 0;
-                margin-bottom: 0;
+            .action-bar {
+                flex-wrap: nowrap;
+                margin-bottom: 40px;
             }
         }
     </style>
@@ -340,9 +376,15 @@
 
     <main class="pricing-container">
         
-        <a href="@Url.Action("CarregarLandingPage", "BaseAdmin")" class="btn-back">
-            <i class="fa-solid fa-arrow-left"></i> Voltar
-        </a>
+        <div class="action-bar">
+            <a href="@Url.Action("CarregarLandingPage", "BaseAdmin")" class="btn-back">
+                <i class="fa-solid fa-arrow-left"></i> Voltar
+            </a>
+
+            <a href="@Url.Action("MontarTelaDemo", "BaseAdmin")" class="btn-demo-top">
+                <i class="fa-solid fa-laptop-medical"></i> Solicite Demonstração Agora
+            </a>
+        </div>
         
         <header class="pricing-header">
             <div class="toggle-wrapper">
@@ -363,7 +405,7 @@
                 
                 <div class="plan-price-box">
                     <span class="price-currency">R$</span>
-                    <span class="price-value" id="price-basico">200</span>
+                    <span class="price-value" id="price-basico">150</span>
                     <span class="price-period" id="period-basico">/ usuário / mês</span>
                     <small class="price-annual-note" id="note-basico">Cobrado mensalmente</small>
                 </div>
@@ -389,7 +431,7 @@
                 
                 <div class="plan-price-box">
                     <span class="price-currency">R$</span>
-                    <span class="price-value" id="price-super">300</span>
+                    <span class="price-value" id="price-super">200</span>
                     <span class="price-period" id="period-super">/ usuário / mês</span>
                     <small class="price-annual-note" id="note-super">Cobrado mensalmente</small>
                 </div>
@@ -407,7 +449,7 @@
                 
                 <div class="plan-price-box">
                     <span class="price-currency">R$</span>
-                    <span class="price-value" id="price-total">400</span>
+                    <span class="price-value" id="price-total">300</span>
                     <span class="price-period" id="period-total">/ usuário / mês</span>
                     <small class="price-annual-note" id="note-total">Cobrado mensalmente</small>
                 </div>
@@ -426,7 +468,7 @@
         <footer class="notes-frame">
             <h3 class="notes-title">Observações importantes:</h3>
             <ul class="notes-list">
-                <li><strong>(*)</strong> Limitado a 300 e-mails/Mês e 100 SMS/Mês.</li>
+                <li><strong>(*)</strong> Limitado a 300 e-mails/Mês and 100 SMS/Mês.</li>
                 <li><strong>(**)</strong> A migração de dados de outras plataformas estará sujeita a avaliação técnica e à viabilidade de segurança.</li>
             </ul>
         </footer>
@@ -463,13 +505,13 @@
                 btnAnual.classList.add('active');
                 instText.style.display = 'block';
 
-                priceB.innerText = "166"; 
-                priceS.innerText = "250"; 
-                priceT.innerText = "333"; 
+                priceB.innerText = "125"; 
+                priceS.innerText = "166"; 
+                priceT.innerText = "250"; 
 
-                noteB.innerText = "R$ 2.000,00 cobrados anualmente";
-                noteS.innerText = "R$ 3.000,00 cobrados anualmente";
-                noteT.innerText = "R$ 4.000,00 cobrados anualmente";
+                noteB.innerText = "R$ 1.500,00 cobrados anualmente";
+                noteS.innerText = "R$ 2.000,00 cobrados anualmente";
+                noteT.innerText = "R$ 3.000,00 cobrados anualmente";
 
                 toastr.success("Exibindo valores promocionais do plano Anual!");
             } else {
@@ -477,9 +519,9 @@
                 btnMensal.classList.add('active');
                 instText.style.display = 'none';
 
-                priceB.innerText = "200";
-                priceS.innerText = "300";
-                priceT.innerText = "400";
+                priceB.innerText = "150";
+                priceS.innerText = "200";
+                priceT.innerText = "300";
 
                 noteB.innerText = "Cobrado mensalmente";
                 noteS.innerText = "Cobrado mensalmente";
@@ -503,18 +545,12 @@
                 confirmButtonText: 'Sim, ir para o cadastro',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
-                // Verifica se o usuário clicou no botão de confirmação
                 if (result.isConfirmed) {
-                    // Constrói a URL usando o helper do Razor apontando para a sua Action
-                    // Substitua 'SeuController' pelo nome real do seu Controller em C#
                     var url = '@Url.Action("MontarTelaCompraBasico", "BaseAdmin")' + '?idPlano=' + idPlano + '&periodo=' + periodoAtivo;
-            
-                    // Redireciona o usuário abrindo a nova tela na mesma aba
                     window.location.href = url;
                 }
             });
         }
-
     </script>
 </body>
 </html>

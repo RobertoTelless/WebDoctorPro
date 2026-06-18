@@ -5593,6 +5593,8 @@
     <Content Include="Views\BaseAdmin\CarregarLandingPage.cshtml" />
     <Content Include="Views\BaseAdmin\MontarTelaPrecos.cshtml" />
     <Content Include="Views\BaseAdmin\ProcessarPagamento.cshtml" />
+    <Content Include="Views\BaseAdmin\MontarTelaDemo - Cópia .cshtml" />
+    <Content Include="Views\BaseAdmin\MontarTelaCompraBasico - Cópia .cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseAdmin\BaseConhecimento\" />

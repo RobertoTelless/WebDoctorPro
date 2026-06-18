@@ -6,247 +6,417 @@
     ViewBag.Title = "WebDoctor - Contratação";
 }
 
-<div class="wrapper wrapper-content animated fadeInRight">
+<style>
+    /* Estilização moderna acoplada preservando a paleta original */
+    :root {
+        --cor-primaria: #1ab394;
+        --cor-primaria-hover: #18a689;
+        --cor-azul-base: #0b3961;
+        --cor-azul-escuro: #0a2540;
+        --bg-cinza: #f8fafc;
+        --bg-alerta-marrom: #fdf8f6;
+        --borda-suave: #e2e8f0;
+    }
 
+    .card-moderno {
+        background: #ffffff;
+        border: 1px solid var(--borda-suave);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(11, 57, 97, 0.04);
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+
+    .header-painel {
+        border-bottom: 2px solid var(--cor-azul-base);
+        padding-bottom: 12px;
+        margin-bottom: 25px;
+    }
+
+    .header-painel h4 {
+        color: var(--cor-azul-base);
+        font-weight: 700;
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .subsecao-titulo {
+        color: var(--cor-primaria);
+        font-weight: 700;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        clear: both;
+        border-left: none !important;
+        padding-left: 0 !important;
+    }
+
+    .box-info-marrom {
+        background-color: var(--bg-alerta-marrom);
+        border-left: 4px solid #b45309;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
+    .box-info-regras {
+        background-color: #fafafa;
+        border: 1px dashed #cbd5e1;
+        border-radius: 6px;
+        padding: 20px;
+    }
+
+    .form-control-moderno {
+        border-radius: 6px !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 8px 12px !important;
+        height: auto !important;
+        transition: all 0.2s ease;
+        background-color: var(--bg-cinza);
+        width: 100%;
+    }
+
+    .form-control-moderno:focus {
+        border-color: var(--cor-primaria) !important;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(26, 179, 148, 0.15);
+    }
+
+    .btn-voltar-container {
+        margin-bottom: 20px;
+    }
+
+    /* Grid responsivo controlado */
+    .row-compacto {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+    .row-compacto > [class*="col-"] {
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-bottom: 15px;
+    }
+
+    .btn-loading1, .btn-loading2 {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* ----------------------------------------------------------- */
+    /* Regras de Responsividade Mobile                             */
+    /* ----------------------------------------------------------- */
+    @@media (max-width: 991px) {
+        .box-info-regras {
+            margin-top: 15px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .card-moderno {
+            padding: 15px;
+        }
+        
+        .ibox-title h2 {
+            font-size: 20px !important;
+        }
+
+        .ibox-heading h3 {
+            font-size: 15px !important;
+        }
+
+        .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8,
+        .col-md-2, .col-md-3, .col-md-4, .col-md-6, .col-md-7, .col-md-8,
+        .col-xs-4, .col-xs-8, .col-xs-12 {
+            width: 100% !important;
+            float: none !important;
+        }
+
+        .input-group {
+            display: flex !important;
+            width: 100%;
+        }
+        
+        .input-group .form-control {
+            flex: 1;
+        }
+
+        .input-group-btn {
+            width: auto !important;
+        }
+
+        #btnBuscaCep {
+            padding: 8px 10px !important;
+            font-size: 12px !important;
+        }
+        
+        .form-group-custom-mobile {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    }
+</style>
+
+<div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <h3>Contratação de Assinatura</h3>
+                
+                <div class="ibox-title" style="border-bottom: 1px solid var(--borda-suave); padding-bottom: 15px;">
+                    <h2 style="font-weight: 800; color: var(--cor-azul-escuro); margin:0;">Contratação de Assinatura</h2>
                 </div>
-                <br />
-                <div class="form-group">
-                    @Html.ButtonLinkIndex(text: "Voltar", controller: "BaseAdmin", action: "CarregarLandingPage")
-                    <br />
-                </div>
-                <div class="ibox-content ibox-heading">
-                    <h3><i class="fa fa-credit-card"></i>Bem-vindo a página de contratação de assinatura do <b>WebDoctorPro</b></h3>
-                </div>
+                
+                <div class="ibox-content" style="background: transparent; border: none; padding: 20px 0;">
+                    <div class="btn-voltar-container">
+                        @Html.ButtonLinkIndex(text: "Voltar", controller: "BaseAdmin", action: "CarregarLandingPage", htmlAttributes: new { @class = "btn btn-default show-spinner", @style = "border-radius: 4px; font-weight: 600;" })
+                    </div>
 
-                <div class="ibox-content" style="height: 2100px">
-                    @if (!ViewData.ModelState.IsValid)
-                    {
-                        <div class="alert alert-danger">
-                            <button type="button" class="close" data-dismiss="alert">Fechar</button>
-                            @Html.ValidationSummary(false, "", new { @class = "text-primary" })
-                        </div>
-                    }
-                    <div class="col-lg-12 col-md-12 col-xs-12">
-                        <div class="col-lg-12 col-md-12 col-xs-12">
-                            <div class="col-lg-12 col-md-12 col-xs-12 ibox float-e-margins" style="border-bottom: solid; border-bottom-color: darkblue; border-bottom-width: 2px; border-left: solid; border-left-color: darkblue; border-left-width: 1px; border-right: solid; border-right-color: darkblue; border-right-width: 1px; border-top: solid; border-top-color: darkblue; border-top-width: 1px">
-                                <div class="ibox-title">
-                                    <h4>Contratação de Assinatura</h4>
+                    <div class="ibox-content ibox-heading" style="background: linear-gradient(135deg, var(--cor-azul-base) 0%, var(--cor-azul-escuro) 100%); color: #ffffff; border-radius: 6px; padding: 20px; border: none; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                        <h3 style="margin: 0; line-height: 1.4; font-weight: 500;">
+                            <i class="fa fa-credit-card" style="margin-right: 8px; color: var(--cor-primaria);"></i> 
+                            Bem-vindo à página de contratação de assinatura do <b>WebDoctorPro</b>
+                        </h3>
+                    </div>
+
+                    <div class="card-moderno">
+                        
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger" style="border-radius: 6px;">
+                                <button type="button" class="close" data-dismiss="alert">Fechar</button>
+                                @Html.ValidationSummary(false, "", new { @class = "text-danger", @style = "font-weight: 600;" })
+                            </div>
+                        }
+
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-xs-12">
+                                <div class="header-painel">
+                                    <h4><i class="fa fa-file-signature" style="color: var(--cor-primaria); margin-right: 6px;"></i> Formulário de Contratação</h4>
                                 </div>
-                                <div class="ibox-content">
-                                    @using (Html.BeginForm("MontarTelaCompraBasico", "BaseAdmin", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", @id="pwd-container1" }))
-                                    {
-                                        <div class="row">
-                                            <h5 style="color: brown; font-weight: bold">Preencha os campos abaixo com as suas informações.</h5>
-                                            <h5 style="color: brown; font-weight: bold">Clique no botão de confirmação e logo você receberá um e-mail com a confirmação de sua assinatura e suas credenciais de acesso</h5>
-                                        </div> 
-                                        <div class="row" id="Botoes">
-                                            <div class="form-group">
-                                                <div class="col-lg-4 col-md-4 col-xs-12" id="Basico">
-                                                    @Html.ButtonActionSubmit(text: "Confirmar a Contratação e Ir para Pagamento", htmlAttributes: new { id = "basictoast", @class = "btn-loading1 show-spinner" })
-                                                    <span id="loadingIndicator" style="display: none; margin-left: 10px; color: #007bff;">
-                                                        <i class="fa fa-spinner fa-spin"></i> Processando...
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                
+                                @using (Html.BeginForm("MontarTelaCompraBasico", "BaseAdmin", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-vertical", @id = "pwd-container1" }))
+                                {
+                                    <div class="box-info-marrom">
+                                        <h5 style="color: #9a3412; font-weight: 700; margin: 0 0 4px 0;"><i class="fa fa-info-circle"></i> Orientações</h5>
+                                        <p style="color: #9a3412; margin: 0; font-size: 13px;">Preencha os campos abaixo com as suas informações.</p>
+                                    </div>
 
-                                        <div class="row" id="Planos">
-                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Seleção do Plano de Assinatura</h4>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                                @Html.HiddenFor(m => m.Telefone)
-                                                @Html.HiddenFor(m => m.EMail)
-                                                @Html.HiddenFor(m => m.Mensagem)
-                                                @Html.HiddenFor(m => m.Assunto)
-                                                @Html.HiddenFor(m => m.Comeco)
-                                                @Html.HiddenFor(m => m.Fim)
-                                                @Html.HiddenFor(m => m.Especialidade)
-                                                <div class="col-lg-4 col-md-4 col-xs-12">
-                                                    Plano de Assinatura
-                                                    @Html.TextBoxFor(m => m.Mensagem, new { @class = "form-control", @tabindex = "-1", @readonly="readonly", style = "font-weight: bold; color: green;"  })
-                                                </div>
-                                                <div class="col-lg-3 col-md-3 col-xs-12">
-                                                    Início
-                                                    @Html.TextBoxFor(m => m.Comeco, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
-                                                </div>
-                                                <div class="col-lg-3 col-md-3 col-xs-12">
-                                                    Término
-                                                    @Html.TextBoxFor(m => m.Fim, new { @class = "form-control", @tabindex = "-1", @readonly = "readonly" })
-                                                </div>
+                                    <div class="row" id="Botoes" style="margin-bottom: 15px;">
+                                        <div class="col-lg-12 col-md-12 col-xs-12" id="Basico">
+                                            @Html.ButtonActionSubmit(text: "Confirmar a Contratação e Ir para Pagamento", htmlAttributes: new { id = "basictoast", @class = "btn btn-primary btn-loading1 show-spinner", @style = "border-radius: 4px; font-weight: 700; width: 100%;" })
+                                            <div style="margin-top: 5px; text-align: center;">
+                                                <span id="loadingIndicator" style="display: none; color: var(--cor-azul-base); font-weight: 600;">
+                                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                                </span>
                                             </div>
                                         </div>
-                                        <div class="row" id="Ident">
-                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Identificação</h4>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                                <div class="col-lg-3 col-md-3 col-xs-12" id="tipoAss">
-                                                    Tipo de Assinante*
-                                                    @Html.DropDownListFor(m => m.Tipo, (SelectList)ViewBag.Assunto, "Selecionar", new { @class = "form-control", autofocus = true, @id = "tipo", onchange = "ValidaTipo($(this).val())"  })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12" style="display: none" id="CPF">
-                                                    CPF*
-                                                    @Html.TextBoxFor(m => m.CPF, new { @class = "form-control", autofocus = true, @id="cpf"  })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12" style="display: none" id="CNPJ">
-                                                    CNPJ*
-                                                    @Html.TextBoxFor(m => m.CPF, new { @class = "form-control", autofocus = true, @id="cnpj"  })
-                                                </div>
-                                            </div>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;" id="Nomes">                
-                                                <div class="col-lg-6 col-md-6 col-xs-12">
-                                                    Nome do Assinante*
-                                                    @Html.TextBoxFor(m => m.Nome, new { @class = "form-control", autofocus = true, @id="nome"  })
-                                                </div>
-                                                <div class="col-lg-6 col-md-6 col-xs-12" style="display: none" id="Razao">
-                                                    Razão Social*
-                                                    @Html.TextBoxFor(m => m.Razao, new { @class = "form-control", autofocus = true, @id="razao"  })
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row" id="Contatos">
-                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Informações de Contato</h4>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">                
-                                                <div class="col-lg-4 col-md-4 col-xs-12">
-                                                    E-Mail*
-                                                    @Html.TextBoxFor(m => m.Resposta, new { @class = "form-control", autofocus = true, @id="mail" })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    Telefone
-                                                    @Html.TextBoxFor(m => m.TelefoneFixo, new { @class = "form-control", autofocus = true, @id="tel"  })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    Celular*
-                                                    @Html.TextBoxFor(m => m.Celular, new { @class = "form-control", autofocus = true, @id="cel"  })
-                                                </div>
-                                            </div>
-                                        </div>
+                                    </div>
+
+                                    <div class="row-compacto">
                                         
-                                        <div class="row" id="Login">
-                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Login e Senha</h4>
-                                            <div class="col-lg-8 col-md-8 col-xs-8">
-                                                <div class="form-group" style=" margin-left: -30px; margin-right: -30px;">                
-                                                    <div class="col-lg-3 col-md-3 col-xs-12">
-                                                        Login*
-                                                        @Html.TextBoxFor(m => m.LoginBase, new { @class = "form-control", autofocus = true, data_toggle = "popover", data_content = "Informe o login para o usuário master do novo assinante. Pode ter até 10 caracteres sem espaços", data_trigger="hover", data_placement="top" })
-                                                        @Html.ValidationMessageFor(m => m.Login, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-4 col-md-4 col-xs-12">
-                                                        Senha*
-                                                        @Html.TextBoxFor(m => m.SenhaBase, new { @class = "form-control pwd1", autofocus = true, @type = "password", @id = "Password1" })
-                                                        @Html.ValidationMessageFor(m => m.SenhaBase, "", new { @style = "color:red" })
-                                                    </div>
-                                                    <div class="col-lg-4 col-md-4 col-xs-12">
-                                                        Confirmação da Senha*
-                                                        @Html.TextBoxFor(m => m.SenhaBaseConfirma, new { @class = "form-control", autofocus = true, @type = "password" })
-                                                        @Html.ValidationMessageFor(m => m.SenhaBaseConfirma, "", new { @style = "color:red" })
-                                                    </div>
-                                                </div>                                            
-                                                <div class="form-group" style=" margin-left: -30px; margin-right: -30px;">
-                                                    <div class="col-lg-11 col-md-11 col-xs-12">
-                                                        <div class="pwstrength_viewport_progress"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4 col-md-4 col-xs-4">
-                                                <div class="ibox float-e-margins" style="background-color:beige">
-                                                    <div class="ibox-title"  style="background-color: darkseagreen; color: darkgreen">
-                                                        <h5>Regras para Formação de Senha</h5>
-                                                    </div>
-                                                    <div class="ibox-content" style="background-color:beige">
-                                                        <div class="form-group" style=" margin-left: 5px; margin-right: 5px;">  
-                                                            <br />
-                                                            <ul style="margin:0; padding-left:20px; list-style-type:disc;">
-                                                                <li style="margin-bottom:2px; line-height:1.1;">Não pode ser igual a anterior</li>
-                                                                <li style="margin-bottom:2px; line-height:1.1;">Tem que ter no mínimo 3 caracteres</li>
-                                                                <li style="margin-bottom:2px; line-height:1.1;">Tem que ter pelo menos uma letra maiúscula</li>
-                                                                <li style="margin-bottom:2px; line-height:1.1;">Tem que ter pelo menos uma letra minúscula</li>
-                                                                <li style="margin-bottom:2px; line-height:1.1;">Tem que ter pelo menos um dígito (0-9)</li>
-                                                                <li style="margin-bottom:2px; line-height:1.1;">Tem que ter no mínimo 3 caracteres</li>
-                                                                <li style="margin-bottom:2px; line-height:1.1;">Tem que ter pelo menos um caractere especial (# $ % &)</li>
-                                                            </ul>                                                               
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            <h3 class="subsecao-titulo">Seleção do Plano de Assinatura</h3>
                                         </div>
 
-                                        <div class="row" id="Enderecos">
-                                            <h4 style="margin-left: 0px; color:green; background-color: beige; font-weight:bold">Endereço</h4>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    CEP*
+                                        @Html.HiddenFor(m => m.Telefone)
+                                        @Html.HiddenFor(m => m.EMail)
+                                        @Html.HiddenFor(m => m.Mensagem)
+                                        @Html.HiddenFor(m => m.Assunto)
+                                        @Html.HiddenFor(m => m.Comeco)
+                                        @Html.HiddenFor(m => m.Fim)
+                                        @Html.HiddenFor(m => m.Especialidade)
+
+                                        <div class="col-lg-4 col-md-4 col-xs-12">
+                                            <label style="font-weight: 600;">Plano de Assinatura</label>
+                                            @Html.TextBoxFor(m => m.Mensagem, new { @class = "form-control form-control-moderno", @tabindex = "-1", @readonly="readonly", style = "font-weight: bold; color: #16a34a;" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            <label style="font-weight: 600;">Cobrança</label>
+                                            @Html.TextBoxFor(m => m.Especialidade, new { @class = "form-control form-control-moderno", @tabindex = "-1", @readonly="readonly", style = "font-weight: bold; color: #16a34a;" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            <label style="font-weight: 600;">Valor (R$)</label>
+                                            @Html.TextBoxFor(m => m.Preco, "{0:n2}", new { @class = "form-control form-control-moderno", @tabindex = "-1", @readonly="readonly", style = "font-weight: bold; color: #16a34a;" })
+                                        </div>
+
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            <label style="font-weight: 600;">Início</label>
+                                            @Html.TextBoxFor(m => m.Comeco, new { @class = "form-control form-control-moderno", @tabindex = "-1", @readonly = "readonly" })
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            <label style="font-weight: 600;">Término</label>
+                                            @Html.TextBoxFor(m => m.Fim, new { @class = "form-control form-control-moderno", @tabindex = "-1", @readonly = "readonly" })
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-xs-12">
+                                            <label style="font-weight: 600;">Período</label>
+                                            @Html.TextBoxFor(m => m.Especialidade, new { @class = "form-control form-control-moderno", @tabindex = "-1", @readonly = "readonly" })
+                                        </div>
+
+
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            <h3 class="subsecao-titulo">Identificação</h3>
+                                        </div>
+
+                                        <div class="col-lg-4 col-md-4 col-xs-12" id="tipoAss">
+                                            <label style="font-weight: 600;">Tipo de Assinante*</label>
+                                            @Html.DropDownListFor(m => m.Tipo, (SelectList)ViewBag.Assunto, "Selecionar", new { @class = "form-control form-control-moderno", autofocus = true, @id = "tipo", onchange = "ValidaTipo($(this).val())" })
+                                        </div>
+
+                                        <div class="col-lg-4 col-md-4 col-xs-12" style="display: none" id="CPF">
+                                            <label style="font-weight: 600;">CPF*</label>
+                                            @Html.TextBoxFor(m => m.CPF, new { @class = "form-control form-control-moderno", @id = "cpf" })
+                                        </div>
+
+                                        <div class="col-lg-4 col-md-4 col-xs-12" style="display: none" id="CNPJ">
+                                            <label style="font-weight: 600;">CNPJ*</label>
+                                            @Html.TextBoxFor(m => m.CPF, new { @class = "form-control form-control-moderno", @id = "cnpj" })
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6 col-xs-12">
+                                            <label style="font-weight: 600;">Nome do Assinante*</label>
+                                            @Html.TextBoxFor(m => m.Nome, new { @class = "form-control form-control-moderno", @id = "nome" })
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6 col-xs-12" style="display: none" id="Razao">
+                                            <label style="font-weight: 600;">Razão Social*</label>
+                                            @Html.TextBoxFor(m => m.Razao, new { @class = "form-control form-control-moderno", @id = "razao" })
+                                        </div>
+
+                                        <div class="col-lg-12 col-md-12 col-xs-12">
+                                            <h3 class="subsecao-titulo">Informações de Contato</h3>
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6 col-xs-12">
+                                            <label style="font-weight: 600;">E-Mail*</label>
+                                            @Html.TextBoxFor(m => m.Resposta, new { @class = "form-control form-control-moderno", @id = "mail" })
+                                        </div>
+
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            <label style="font-weight: 600;">Telefone</label>
+                                            @Html.TextBoxFor(m => m.TelefoneFixo, new { @class = "form-control form-control-moderno", @id = "tel" })
+                                        </div>
+
+                                        <div class="col-lg-3 col-md-3 col-xs-12">
+                                            <label style="font-weight: 600;">Celular*</label>
+                                            @Html.TextBoxFor(m => m.Celular, new { @class = "form-control form-control-moderno", @id = "cel" })
+                                        </div>
+
+                                        <div class="col-lg-8 col-md-8 col-xs-12">
+                                            
+                                            <h3 class="subsecao-titulo">Login e Senha</h3>
+                                            <div class="row-compacto form-group-custom-mobile" style="margin-bottom: 20px;">
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    <label style="font-weight: 600;">Login*</label>
+                                                    @Html.TextBoxFor(m => m.LoginBase, new { @class = "form-control form-control-moderno", data_toggle = "popover", data_content = "Informe o login para o usuário master do novo assinante. Pode ter até 10 caracteres sem espaços", data_trigger = "hover", data_placement = "top" })
+                                                    @Html.ValidationMessageFor(m => m.Login, "", new { @style = "color:red; font-size:11px;" })
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    <label style="font-weight: 600;">Senha*</label>
+                                                    @Html.TextBoxFor(m => m.SenhaBase, new { @class = "form-control form-control-moderno pwd1", @type = "password", @id = "Password1" })
+                                                    @Html.ValidationMessageFor(m => m.SenhaBase, "", new { @style = "color:red; font-size:11px;" })
+                                                </div>
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    <label style="font-weight: 600;">Confirmação da Senha*</label>
+                                                    @Html.TextBoxFor(m => m.SenhaBaseConfirma, new { @class = "form-control form-control-moderno", @type = "password" })
+                                                    @Html.ValidationMessageFor(m => m.SenhaBaseConfirma, "", new { @style = "color:red; font-size:11px;" })
+                                                </div>
+                                                <div class="col-lg-12 col-md-12 col-xs-12">
+                                                    <div class="pwstrength_viewport_progress" style="margin-top: 5px;"></div>
+                                                </div>
+                                            </div>
+
+                                            <h3 class="subsecao-titulo">Endereço</h3>
+                                            <div class="row-compacto form-group-custom-mobile">
+                                                <div class="col-lg-4 col-md-4 col-xs-12">
+                                                    <label style="font-weight: 600;">CEP*</label>
                                                     <div class="input-group">
-                                                        @Html.TextBoxFor(m => m.CEP, new { @class = "form-control", @id = "cep", autofocus = true, @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
-                                                        @Html.ValidationMessageFor(m => m.CEP, "", new { @style = "color:red" })
+                                                        @Html.TextBoxFor(m => m.CEP, new { @class = "form-control form-control-moderno", @id = "cep", @onblur = "PesquisaCep($('#cep').val(), $(this), 1)" })
                                                         <span class="input-group-btn">
-                                                            <span class="btn btn-warning btn-sm" id="btnBuscaCep" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
+                                                            <span class="btn btn-warning" id="btnBuscaCep" style="height: 36px; padding: 8px 12px;" data_toggle = "popover" data_content = "Pesquisar o CEP informado" data_trigger="hover" data_placement="top" onclick="PesquisaCep($('#cep').val(), $(this), 1)">Buscar CEP</span>
                                                         </span>
                                                     </div>
-                                                    <div class="col-lg-12 col-md-12 col-xs-12" style="display:none" id="cepval">
-                                                        <h5>CEP inválido</h5>
+                                                    @Html.ValidationMessageFor(m => m.CEP, "", new { @style = "color:red; font-size:11px;" })
+                                                    <div style="display:none; color: red; margin-top: 5px;" id="cepval">
+                                                        <h5><i class="fa fa-exclamation-triangle"></i> CEP inválido</h5>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+
+                                                <div class="col-lg-8 col-md-8 col-xs-12">
+                                                    <label style="font-weight: 600;">Endereço*</label>
+                                                    @Html.TextBoxFor(m => m.Endereco, new { @class = "form-control form-control-moderno", @id = "endereco" })
+                                                    @Html.ValidationMessageFor(m => m.Endereco, "", new { @style = "color:red; font-size:11px;" })
+                                                </div>
+
+                                                <div class="col-lg-3 col-md-3 col-xs-12">
+                                                    <label style="font-weight: 600;">Número*</label>
+                                                    @Html.TextBoxFor(m => m.Numero, new { @class = "form-control form-control-moderno", @id = "nmr" })
+                                                    @Html.ValidationMessageFor(m => m.Numero, "", new { @style = "color:red; font-size:11px;" })
+                                                </div>
+
+                                                <div class="col-lg-5 col-md-5 col-xs-12">
+                                                    <label style="font-weight: 600;">Complemento</label>
+                                                    @Html.TextBoxFor(m => m.Complemento, new { @class = "form-control form-control-moderno", @id = "complemento" })
+                                                    @Html.ValidationMessageFor(m => m.Complemento, "", new { @style = "color:red; font-size:11px;" })
+                                                </div>
+
                                                 <div class="col-lg-4 col-md-4 col-xs-12">
-                                                    Endereço*
-                                                    @Html.TextBoxFor(m => m.Endereco, new { @class = "form-control", @id = "endereco", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.Endereco, "", new { @style = "color:red" })
+                                                    <label style="font-weight: 600;">Bairro*</label>
+                                                    @Html.TextBoxFor(m => m.Bairro, new { @class = "form-control form-control-moderno", @id = "bairro" })
+                                                    @Html.ValidationMessageFor(m => m.Bairro, "", new { @style = "color:red; font-size:11px;" })
                                                 </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    Número*
-                                                    @Html.TextBoxFor(m => m.Numero, new { @class = "form-control", @id = "nmr", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.Numero, "", new { @style = "color:red" })
+
+                                                <div class="col-lg-6 col-md-6 col-xs-12">
+                                                    <label style="font-weight: 600;">Cidade*</label>
+                                                    @Html.TextBoxFor(m => m.Cidade, new { @class = "form-control form-control-moderno", @id = "cidade" })
+                                                    @Html.ValidationMessageFor(m => m.Cidade, "", new { @style = "color:red; font-size:11px;" })
                                                 </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    Complemento
-                                                    @Html.TextBoxFor(m => m.Complemento, new { @class = "form-control", autofocus = true, @id = "complemento" })
-                                                    @Html.ValidationMessageFor(m => m.Complemento, "", new { @style = "color:red" })
-                                                </div>
-                                            </div>
-                                            <div class="form-group" style=" margin-left: -15px; margin-right: -15px;">
+
                                                 <div class="col-lg-3 col-md-3 col-xs-12">
-                                                    Bairro*
-                                                    @Html.TextBoxFor(m => m.Bairro, new { @class = "form-control", @id = "bairro", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.Bairro, "", new { @style = "color:red" })
+                                                    <label style="font-weight: 600;">UF*</label>
+                                                    @Html.DropDownListFor(m => m.UF, (SelectList)ViewBag.UF, "UF", new { @class = "form-control form-control-moderno", @id = "uf" })
+                                                    @Html.ValidationMessageFor(m => m.UF, "", new { @style = "color:red; font-size:11px;" })
                                                 </div>
+
                                                 <div class="col-lg-3 col-md-3 col-xs-12">
-                                                    Cidade*
-                                                    @Html.TextBoxFor(m => m.Cidade, new { @class = "form-control", @id = "cidade", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.Cidade, "", new { @style = "color:red" })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    UF*
-                                                    @Html.DropDownListFor(m => m.UF, (SelectList)ViewBag.UF, "UF", new { @class = "form-control", @id = "uf", autofocus = true })
-                                                    @Html.ValidationMessageFor(m => m.UF, "", new { @style = "color:red" })
-                                                </div>
-                                                <div class="col-lg-2 col-md-2 col-xs-12">
-                                                    CEP
-                                                    @Html.TextBoxFor(m => m.CEPBase, new { @class = "form-control", @id = "cepBase", @readonly = "readonly" })
-                                                    @Html.ValidationMessageFor(m => m.CEPBase, "", new { @style = "color:red" })
+                                                    <label style="font-weight: 600;">CEP Base</label>
+                                                    @Html.TextBoxFor(m => m.CEPBase, new { @class = "form-control form-control-moderno", @id = "cepBase", @readonly = "readonly", @style="background-color: #e2e8f0;" })
+                                                    @Html.ValidationMessageFor(m => m.CEPBase, "", new { @style = "color:red; font-size:11px;" })
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="row" id="Botoes">
-                                            <div class="form-group">
-                                                <div class="col-lg-6 col-md-6 col-xs-12" id="Basico">
-                                                    @Html.ButtonActionSubmit(text: "Confirmar a Contratação e Ir para Pagamento", htmlAttributes: new { id = "basictoast", @class = "btn-loading2 show-spinner" })
-                                                    <span id="loadingIndicator1" style="display: none; margin-left: 10px; color: #007bff;">
-                                                        <i class="fa fa-spinner fa-spin"></i> Processando...
-                                                    </span>
-                                                </div>
+                                        <div class="col-lg-4 col-md-4 col-xs-12" style="margin-top: 25px;">
+                                            <div class="box-info-regras">
+                                                <h4 style="color: #15803d; font-weight: 700; margin-top: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                                    <i class="fa fa-shield-halved"></i> Segurança da Senha
+                                                </h4>
+                                                <ul style="margin:0; padding-left:18px; list-style-type:disc; color: #475569; font-size: 13px;">
+                                                    <li style="margin-bottom:6px; line-height:1.3;">Não pode ser igual à anterior</li>
+                                                    <li style="margin-bottom:6px; line-height:1.3;">Tem que ter no mínimo 3 caracteres</li>
+                                                    <li style="margin-bottom:6px; line-height:1.3;">Tem que ter pelo menos uma letra maiúscula</li>
+                                                    <li style="margin-bottom:6px; line-height:1.3;">Tem que ter pelo menos uma letra minúscula</li>
+                                                    <li style="margin-bottom:6px; line-height:1.3;">Tem que ter pelo menos um dígito (0-9)</li>
+                                                    <li style="margin-bottom:6px; line-height:1.3;">Tem que ter pelo menos um caractere especial (# $ % &)</li>
+                                                    <li style="margin-bottom:0; line-height:1.3; color: #b91c1c;">Não pode conter os caracteres (+ - * / =)</li>
+                                                </ul>
                                             </div>
                                         </div>
-                                    }
-                                </div>
+
+                                        <div class="col-lg-12 col-md-12 col-xs-12" style="margin-top: 30px; border-top: 1px solid var(--borda-suave); padding-top: 20px;">
+                                            @Html.ButtonActionSubmit(text: "Confirmar a Contratação e Ir para Pagamento", htmlAttributes: new { id = "basictoast", @class = "btn btn-primary btn-loading2 show-spinner", @style = "padding: 12px 24px; font-weight: 700; border-radius: 6px; width: 100%;" })
+                                            <div style="margin-top: 5px; text-align: center;">
+                                                <span id="loadingIndicator1" style="display: none; color: var(--cor-azul-base); font-weight: 600;">
+                                                    <i class="fa fa-spinner fa-spin"></i> Processando...
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }
                             </div>
-                        </div>                          
-                            
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -266,19 +436,16 @@
     <link href="@Url.Content("~/Scripts/plugins/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css" />
 
     <style>
-        /* 1. Aumenta a largura e garante o espaço interno */
         #toast-container > .toast {
             width: 500px !important; 
-            max-width: 500px !important;
+            max-width: 100% !important;
             opacity: 0.95 !important;
         }
 
-        /* 2. Remove o ícone nativo do Toastr (Background Image) */
         #toast-container > .toast-success {
             background-image: none !important;
         }
 
-        /* 3. Remove ícones do FontAwesome/Inspinia injetados via ::before no Título */
         .toast-success .toast-title::before, 
         .toast-success .toast-title::after,
         .toast-success::before {
@@ -286,14 +453,12 @@
             display: none !important;
         }
 
-        /* 4. Ajusta o recuo do texto já que removemos o ícone */
         .toast-success .toast-title, 
         .toast-success .toast-message {
             padding-left: 10px !important;
         }
     </style>
     <style>
-        /* Estilo Base */
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -314,27 +479,19 @@
             margin-right: 6px;
         }
 
-        /* PENDING (Gold) - Status 0 */
         .status-pending { background-color: #fef9c3; color: #a16207; }
         .status-pending::before { background-color: #ca8a04; }
-
-        /* ACTIVE (Green) - Status 1 */
         .status-active { background-color: #dcfce7; color: #15803d; }
         .status-active::before { background-color: #16a34a; }
-
-        /* CANCEL (Red) - Status 4 */
         .status-cancel { background-color: #fee2e2; color: #b91c1c; }
         .status-cancel::before { background-color: #dc2626; }
-
-        /* FINISH (Dark Blue) - Status 2 */
         .status-finish { background-color: #dbeafe; color: #1e40af; }
         .status-finish::before { background-color: #2563eb; }
-
-        /* OVERDUE (Gray) - Status 3 */
         .status-overdue { background-color: #f3f4f6; color: #4b5563; }
         .status-overdue::before { background-color: #6b7280; }
     </style>
 }
+
 @section Scripts {
     @Scripts.Render("~/plugins/toastr")
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
@@ -346,6 +503,7 @@
     <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
     <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
     @Scripts.Render("~/plugins/passwordMeter")
+    
     <script type="text/javascript">
         $(document).ready(function () {
             $('[data-toggle="popover"]').popover();
@@ -364,7 +522,6 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('.btn-loading1').on('click', function (e) {
-            
                 var $this = $(this);
                 var tagName = $this.prop('tagName').toLowerCase();
                 $this.addClass('disabled'); 
@@ -372,10 +529,8 @@
 
                 if (tagName === 'a') {
                     e.preventDefault();
-                
                     var targetUrl = $this.attr('href');
                     window.location.href = targetUrl;
-                
                 } else if (tagName === 'button' || tagName === 'input') {               
                     $this.closest('form').submit();
                     $this.prop('disabled', true);
@@ -386,7 +541,6 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('.btn-loading2').on('click', function (e) {
-            
                 var $this = $(this);
                 var tagName = $this.prop('tagName').toLowerCase();
                 $this.addClass('disabled'); 
@@ -394,10 +548,8 @@
 
                 if (tagName === 'a') {
                     e.preventDefault();
-                
                     var targetUrl = $this.attr('href');
                     window.location.href = targetUrl;
-                
                 } else if (tagName === 'button' || tagName === 'input') {               
                     $this.closest('form').submit();
                     $this.prop('disabled', true);
@@ -420,7 +572,6 @@
                 debug: false,
             };
             $('.pwd1').pwstrength(options1);
-
         });
     </script>
    
@@ -431,6 +582,7 @@
             $("#cpf").mask("999.999.999-99");
             $("#cnpj").mask("99.999.999/9999-99");
             $("#cep").mask("99999-999");
+            $("#cepBase").mask("99999-999");
         });
     </script>
 
@@ -448,18 +600,18 @@
             ValidaTipo($('#tipo').val());
         });
     </script>
-
+    
     <script type="text/javascript">
         function ValidaPlano(valTipo) {
             if (valTipo == '18') {
                 $("#Basico").show();
                 $("#Super").hide();
                 $("#SuperFinanceiro").hide();
-            } else if (valTipo == '20'){
+            } else if (valTipo == '20') {
                 $("#Basico").hide();
                 $("#Super").show();
                 $("#SuperFinanceiro").hide();
-            } else if (valTipo == '24'){
+            } else if (valTipo == '24') {
                 $("#Basico").hide();
                 $("#Super").hide();
                 $("#SuperFinanceiro").show();
@@ -470,27 +622,21 @@
         });
     </script>
     
-    
     <script>
         function PesquisaCep(cep, btn, tipoEnd) {
             data = {
-                cep: cep
-                , tipoEnd: tipoEnd
+                cep: cep,
+                tipoEnd: tipoEnd
             }
-
-            //$(btn).attr("disabled", "disabled");
-
             $.ajax({
-                url: '../Paciente/PesquisaCEP_Javascript'
-                , type: 'POST'
-                , data: data
-                , success: function (r) {
+                url: '../Paciente/PesquisaCEP_Javascript',
+                type: 'POST',
+                data: data,
+                success: function (r) {
                     if (r.Sucesso == 0) {
                         if (tipoEnd == 1) {
                             $("#cepval").show();
-                        //    $('#btnBuscaCep').removeAttr("disabled");
                         }
-
                     }
                     else {
                         $("#cepval").hide();
@@ -516,12 +662,11 @@
                 var data = {
                     id: id
                 }
-
                 $.ajax({
-                    url: '../BaseAdmin/GetLogin'
-                    , type: 'POST'
-                    , data: data
-                    , success: function (r) {
+                    url: '../BaseAdmin/GetLogin',
+                    type: 'POST',
+                    data: data,
+                    success: function (r) {
                         $('#cpf').val(r.CPF);
                         $('#cnpj').val(r.CNPJ);
                         $('#nome').val(r.Nome);
@@ -545,7 +690,7 @@
             } 
         }
     </script>
-    <!-- 1. Estrutura do Modal (Coloque preferencialmente no final do seu arquivo .cshtml) -->
+
     <div class="modal fade" id="modalAssinaturaSucesso" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -568,7 +713,6 @@
         </div>
     </div>
 
-    <!-- 2. Script para disparar o Modal -->
     <script type="text/javascript">
         function exibirModalSucesso() {
             $('#modalAssinaturaSucesso').modal({
@@ -579,7 +723,6 @@
         }
 
         $(document).ready(function () {
-            // Alterado de ViewBag para TempData
             @if (TempData["ExibirSucesso"] != null && (bool)TempData["ExibirSucesso"])
             {
                 <text>exibirModalSucesso();</text>
@@ -588,14 +731,12 @@
     </script>
 
     <style>
-        /* Estilo adicional para garantir que o modal fique centralizado e bonito no Inspinia */
         .modal-dialog-centered {
             display: flex;
             align-items: center;
             min-height: calc(100% - 1rem);
         }
-    
-        /* Usamos @@ para escapar o símbolo no Razor e evitar erro de variável inexistente */
+        
         @@media (min-width: 576px) {
             .modal-dialog-centered {
                 min-height: calc(100% - 3.5rem);
@@ -605,10 +746,8 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            // Configurações globais do Toastr
             toastr.options = {
                 "closeButton": true,
-                //"debug": false,
                 "progressBar": true,
                 "preventDuplicates": false,
                 "positionClass": "toast-top-right",
@@ -621,26 +760,21 @@
                 "hideEasing": "linear",
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
-            //    "iconClass": "customer-toast-info", // Se quiser remover o ícone padrão totalmente
-            //    "titleClass": "toast-title",
-            //    "messageClass": "toast-message"
             };
 
-            // Verifica se existe mensagem de sucesso no TempData (vinda do Redirect)
             var msgSucesso = '@TempData["MensagemAcerto"]';
             if (msgSucesso != '') {
                 toastr.success(msgSucesso, 'Sucesso!');
             }
 
-            // Verifica se existe mensagem de erro
             var msgErro = '@TempData["MensagemErro"]';
             if (msgErro != '') {
                 toastr.error(msgErro, 'Erro!');
             }
         });
     </script>
-
 }
+
 @if (ViewBag.Message != null)
 {
     <script type="text/javascript">
@@ -649,4 +783,3 @@
             };
     </script>
 }
-
