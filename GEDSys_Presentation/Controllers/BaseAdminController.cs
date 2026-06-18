@@ -1538,7 +1538,7 @@ namespace ERP_Condominios_Solution.Controllers
         {
             try
             {
-                Int32 idAss = (Int32)Session["IdAssinante"];
+                Int32 idAss = 1;
                 CONFIGURACAO conf = new CONFIGURACAO();
                 if (Session["Configuracao"] == null)
                 {
@@ -7899,8 +7899,73 @@ namespace ERP_Condominios_Solution.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<JsonResult> EnviarEmailContato(string nome, string email, string celular, string motivo, string respostaPor, string mensagem)
+        {
+            try
+            {
+                // 1. Monta o corpo do e-mail em formato HTML limpo
+                StringBuilder htmlBody = new StringBuilder();
+                htmlBody.Append("<h2>Novo Contato via Landing Page - WebDoctorPro</h2>");
+                htmlBody.Append($"<p><strong>Nome:</strong> {nome}</p>");
+                htmlBody.Append($"<p><strong>E-mail do Cliente:</strong> {email}</p>");
+                htmlBody.Append($"<p><strong>Celular/WhatsApp:</strong> {celular}</p>");
+                htmlBody.Append($"<p><strong>Motivo do Contato:</strong> {motivo}</p>");
+                htmlBody.Append($"<p><strong>Preferência de Resposta:</strong> {respostaPor}</p>");
+                htmlBody.Append("<p><strong>Mensagem:</strong></p>");
+                htmlBody.Append($"<div style='background:#f4f6f9; padding:15px; border-radius:5px;'>{mensagem.Replace("\n", "<br/>")}</div>");
+                String emailBody = htmlBody.ToString();
 
+                // Monta e-mail
+                List<EmailAddress> emails = new List<EmailAddress>();
+                CONFIGURACAO conf = CarregaConfiguracaoGeral();
+                String emissor = CrossCutting.Cryptography.Decrypt(conf.CONF_NM_EMISSOR_AZURE_CRIP);
+                String conn = CrossCutting.Cryptography.Decrypt(conf.CONF_CS_CONNECTION_STRING_AZURE_CRIP);
+                List<AttachmentModel> models = new List<AttachmentModel>();
 
+                NetworkCredential net = new NetworkCredential(conf.CONF_NM_SENDGRID_LOGIN, conf.CONF_NM_SENDGRID_PWD);
+                EmailAzure msg = new EmailAzure();
+                msg.ASSUNTO = "Solicitação de Suporte";
+                msg.CORPO = emailBody;
+                msg.DEFAULT_CREDENTIALS = false;
+                msg.EMAIL_TO_DESTINO = conf.CONF_EM_CRMSYS;
+                msg.NOME_EMISSOR_AZURE = emissor;
+                msg.ENABLE_SSL = true;
+                msg.NOME_EMISSOR = "WebDoctor";
+                msg.PORTA = conf.CONF_NM_PORTA_SMTP;
+                msg.PRIORIDADE = System.Net.Mail.MailPriority.High;
+                msg.SENHA_EMISSOR = conf.CONF_NM_SENDGRID_PWD;
+                msg.SMTP = conf.CONF_NM_HOST_SMTP;
+                msg.IS_HTML = true;
+                msg.NETWORK_CREDENTIAL = net;
+                msg.ConnectionString = conn;
+                String status = "Succeeded";
+                String iD = "xyz";
+
+                // Envia mensagem
+                try
+                {
+                    await CrossCutting.CommunicationAzurePackage.SendMailAsync(msg,models);
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = ex.Message;
+                    Session["TipoVolta"] = 2;
+                    Session["VoltaExcecao"] = "Suporte";
+                    Session["Excecao"] = ex;
+                    Session["ExcecaoTipo"] = ex.GetType().ToString();
+                    GravaLogExcecao grava = new GravaLogExcecao(usuApp);
+                    Int32 voltaX = grava.GravarLogExcecao(ex, "Suporte", "WebDoctor", 1, (USUARIO)Session["UserCredentials"]);
+                    return Json(new { Sucesso = false, Mensagem = "Erro técnico ao despachar e-mail: " + ex.Message });
+                }
+                return Json(new { Sucesso = true, Mensagem = "Mensagem enviada com sucesso para a fila de atendimento da RTi Ltda." });
+            }
+            catch (Exception ex)
+            {
+                // Retorna o erro amigável para o front-end tratar na modal
+                return Json(new { Sucesso = false, Mensagem = "Erro técnico ao despachar e-mail: " + ex.Message });
+            }
+        }
 
 
     }

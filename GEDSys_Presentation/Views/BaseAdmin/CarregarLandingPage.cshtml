@@ -169,6 +169,16 @@
             color: var(--cor-primaria);
         }
 
+        .hero-links a.link-login-custom {
+            color: var(--cor-primaria) !important;
+            font-size: 20px !important; 
+            font-weight: 800 !important;
+        }
+
+        .hero-links a.link-login-custom:hover {
+            color: var(--cor-primaria-hover) !important;
+        }
+
         .hero-content {
             align-items: center;
         }
@@ -601,7 +611,8 @@
                         <a href="#funcionalidades"><i class="fa fa-list-check"></i> Funcionalidades</a>
                         <a href="@Url.Action("MontarTelaPrecos", "BaseAdmin")" target="_blank"><i class="fa fa-tags"></i> Planos e Preços</a>
                         <a href="#formulario"><i class="fa fa-envelope"></i> Fale Conosco</a>
-                        <a href="@Url.Action("Login", "ControleAcesso")" target="_blank" style="color: var(--cor-primaria);"><i class="fa fa-right-to-bracket"></i> Login</a>
+                        @*<a href="@Url.Action("Login", "ControleAcesso")" target="_blank" style="color: var(--cor-primaria);"><i class="fa fa-right-to-bracket"></i> Login</a>*@
+                        <a href="@Url.Action("Login", "ControleAcesso")" target="_blank" class="link-login-custom"><i class="fa fa-right-to-bracket"></i> Login</a>
                         <a href="@Url.Action("MontarTelaDemo", "BaseAdmin")" target="_blank" class="btn-custom btn-primary-custom" style="padding: 8px 16px;">Solicite Demonstração Agora</a>
                     </div>
                 </nav>
@@ -950,7 +961,7 @@
                                 </div>
 
                                 <div class="form-group-custom">
-                                    <label for="txtEmail">E-Mail Corporativo *</label>
+                                    <label for="txtEmail">E-Mail*</label>
                                     <input type="email" id="txtEmail" class="form-control-custom" required placeholder="exemplo@dominio.com" />
                                 </div>
 
@@ -1069,6 +1080,48 @@
         });
 
         // Manipulação e Envio de Dados do Formulário para suporte@rtiltda.net
+        //function EnviarFormularioContato(event) {
+        //    event.preventDefault();
+
+        //    var nome = $('#txtNome').val().trim();
+        //    var email = $('#txtEmail').val().trim();
+        //    var celular = $('#txtCelular').val().trim();
+        //    var motivo = $('#txtMotivo').val().trim();
+        //    var respostaPor = $('input[name="radResposta"]:checked').val();
+        //    var mensagem = $('#txtMensagem').val().trim();
+
+        //    if (celular.length < 14) {
+        //        toastr.warning("Por favor, preencha o número de celular completo com o DDD.", "Formato Inválido");
+        //        return false;
+        //    }
+
+        //    // Loader UI/UX do SweetAlert2 focado no canal de suporte da RTI
+        //    Swal.fire({
+        //        title: 'Processando Envio',
+        //        text: 'Encaminhando sua mensagem para suporte@rtiltda.net...',
+        //        allowOutsideClick: false,
+        //        didOpen: () => {
+        //            Swal.showLoading();
+        //        }
+        //    });
+
+        //    setTimeout(function () {
+        //        Swal.close();
+
+        //        Swal.fire({
+        //            icon: 'success',
+        //            title: 'Mensagem Enviada com Sucesso!',
+        //            html: 'Obrigado pelo contato, <strong>' + nome + '</strong>! Suas informações foram enviadas para o suporte técnico. Iremos responder o quanto antes via <strong>' + respostaPor + '</strong>.',
+        //            confirmButtonColor: '#1ab394'
+        //        });
+
+        //        toastr.success("Cópia enviada com sucesso para a fila de atendimento da RTi Ltda.", "Suporte Notificado");
+
+        //        // Reset do formulário pós-sucesso
+        //        $('#formContatoWebDoctor')[0].reset();
+        //    }, 1500);
+        //}
+
         function EnviarFormularioContato(event) {
             event.preventDefault();
 
@@ -1084,7 +1137,7 @@
                 return false;
             }
 
-            // Loader UI/UX do SweetAlert2 focado no canal de suporte da RTI
+            // Loader UI/UX do SweetAlert2 ativo durante a transmissão real
             Swal.fire({
                 title: 'Processando Envio',
                 text: 'Encaminhando sua mensagem para suporte@rtiltda.net...',
@@ -1094,22 +1147,53 @@
                 }
             });
 
-            setTimeout(function () {
-                Swal.close();
+            // Chamada AJAX real conectando com o Back-End do seu Controller
+            // IMPORTANTE: Ajuste "Home" para o nome do seu Controller correspondente
+            $.ajax({
+                url: '@Url.Action("EnviarEmailContato", "BaseAdmin")', 
+                type: 'POST',
+                data: {
+                    nome: nome,
+                    email: email,
+                    celular: celular,
+                    motivo: motivo,
+                    respostaPor: respostaPor,
+                    mensagem: mensagem
+                },
+                success: function (response) {
+                    Swal.close();
 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Mensagem Enviada com Sucesso!',
-                    html: 'Obrigado pelo contato, <strong>' + nome + '</strong>! Suas informações foram enviadas para o suporte técnico. Iremos responder o quanto antes via <strong>' + respostaPor + '</strong>.',
-                    confirmButtonColor: '#1ab394'
-                });
+                    if (response.Sucesso) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Mensagem Enviada com Sucesso!',
+                            html: 'Obrigado pelo contato, <strong>' + nome + '</strong>! Suas informações foram enviadas para o suporte técnico. Iremos responder o quanto antes via <strong>' + respostaPor + '</strong>.',
+                            confirmButtonColor: '#1ab394'
+                        });
 
-                toastr.success("Cópia enviada com sucesso para a fila de atendimento da RTi Ltda.", "Suporte Notificado");
-
-                // Reset do formulário pós-sucesso
-                $('#formContatoWebDoctor')[0].reset();
-            }, 1500);
+                        toastr.success(response.Mensagem, "Suporte Notificado");
+                        $('#formContatoWebDoctor')[0].reset(); // Limpa o formulário
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Falha no Envio',
+                            text: response.Mensagem,
+                            confirmButtonColor: '#1ab394'
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erro de Conexão',
+                        text: 'Não foi possível estabelecer contato com o servidor de e-mails. Tente novamente em instantes.',
+                        confirmButtonColor: '#1ab394'
+                    });
+                }
+            });
         }
+
     </script>
 </body>
 </html>

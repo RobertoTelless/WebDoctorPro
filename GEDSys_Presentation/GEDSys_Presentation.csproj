@@ -4099,9 +4099,11 @@
     <None Include="Properties\PublishProfiles\eprontuario - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - FTP2.pubxml" />
+    <None Include="Properties\PublishProfiles\eprontuario - FTP3.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy1.pubxml" />
     <None Include="Properties\PublishProfiles\eprontuario - Web Deploy2.pubxml" />
+    <None Include="Properties\PublishProfiles\eprontuario - Web Deploy3.pubxml" />
     <None Include="Properties\PublishProfiles\webdoctor - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\webdoctor - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\WebDoctorProHomologacao - FTP.pubxml" />
